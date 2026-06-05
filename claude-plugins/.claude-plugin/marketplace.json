@@ -1,0 +1,25 @@
+{
+  "name": "local-marketplace",
+  "owner": {
+    "name": "Rick Jefferson",
+    "email": "rjbizsolution23@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "evolving-lite",
+      "source": "./evolving-lite"
+    },
+    {
+      "name": "zc-ctx",
+      "source": "./SecureContext"
+    },
+    {
+      "name": "opencode-mem",
+      "source": "./opencode-mem"
+    },
+    {
+      "name": "memory-toolkit",
+      "source": "./memory-toolkit"
+    }
+  ]
+}

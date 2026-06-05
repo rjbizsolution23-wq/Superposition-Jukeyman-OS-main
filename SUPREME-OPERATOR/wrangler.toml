@@ -1,0 +1,48 @@
+name = "supreme-operator-orchestrator"
+main = "apps/orchestrator/dist/index.js"
+
+# Cron triggers
+[triggers]
+crons = ["0 3 * * 1"] # Weekly Monday 3am
+
+# Additional script for cron handling
+[[build.upload.rules]]
+type = "ESModule"
+globs = ["apps/orchestrator/dist/cron.js"]
+compatibility_date = "2024-01-01"
+
+[build]
+command = "pnpm run build"
+
+[vars]
+NODE_ENV = "production"
+
+[[kv_namespaces]]
+binding = "SUPREME_KV"
+id = "d0e09d477a244cd1b4b6e6a9b7d86b4f"
+
+[[kv_namespaces]]
+binding = "MCP_SESSIONS"
+id = "ffb2b76d381d4ecbafadcef5f0e498dc"
+
+[[d1_databases]]
+binding = "SUPREME_DB"
+database_name = "supreme-operator"
+database_id = "e7560660-1881-4ef6-8409-5af78b8b0f52"
+
+[ai]
+binding = "AI"
+
+[triggers]
+crons = ["0 3 * * 1"]  # Weekly autoresearch Monday 3am
+
+# Environment secrets (set via wrangler secret put)
+# CLOUDFLARE_API_TOKEN
+# STRIPE_SECRET_KEY
+# TWILIO_ACCOUNT_SID
+# TWILIO_AUTH_TOKEN
+# GHL_API_KEY
+# COINBASE_API_KEY_ID
+# COINBASE_API_KEY_SECRET
+# ELEVENLABS_API_KEY
+# REPLICATE_API_TOKEN

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Forge by RJ Business Solutions — Professional Credit Repair</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#fff;line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* NAV */
+.nav{padding:20px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1a1a1a}
+.nav .logo{font-size:24px;font-weight:800;background:linear-gradient(135deg,#00d4aa,#00b894);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav .phone{color:#00d4aa;font-weight:600;text-decoration:none}
+
+/* HERO */
+.hero{text-align:center;padding:80px 0 60px}
+.hero .badge{display:inline-block;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:#00d4aa;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:20px}
+.hero h1{font-size:52px;font-weight:800;line-height:1.1;margin-bottom:20px}
+.hero h1 span{background:linear-gradient(135deg,#00d4aa,#00b894);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:20px;color:#888;max-width:600px;margin:0 auto 40px}
+.hero .cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-primary{padding:16px 36px;background:linear-gradient(135deg,#00d4aa,#00b894);color:#0a0a0a;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-secondary{padding:16px 36px;background:transparent;color:#fff;border:1px solid #333;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.stats{display:flex;justify-content:center;gap:60px;margin-top:60px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-size:36px;font-weight:800;color:#00d4aa}
+.stat .label{color:#666;font-size:14px}
+
+/* SECTIONS */
+.section{padding:80px 0}
+.section h2{font-size:36px;font-weight:800;text-align:center;margin-bottom:16px}
+.section .subtitle{text-align:center;color:#666;font-size:18px;max-width:600px;margin:0 auto 50px}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+.step{background:#141414;border:1px solid #222;border-radius:16px;padding:30px;text-align:center}
+.step .icon{font-size:40px;margin-bottom:16px}
+.step h3{font-size:18px;margin-bottom:8px;color:#00d4aa}
+.step p{color:#888;font-size:14px}
+
+/* PRICING */
+.pricing{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;max-width:800px;margin:0 auto}
+.price-card{background:#141414;border:1px solid #222;border-radius:16px;padding:40px;position:relative}
+.price-card.popular{border-color:#00d4aa}
+.price-card .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#00d4aa;color:#0a0a0a;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700}
+.price-card h3{font-size:24px;margin-bottom:8px}
+.price-card .price{font-size:48px;font-weight:800;color:#00d4aa;margin:16px 0}
+.price-card .price span{font-size:16px;color:#666;font-weight:400}
+.price-card ul{list-style:none;margin:20px 0}
+.price-card ul li{padding:8px 0;color:#aaa;font-size:14px;border-bottom:1px solid #1a1a1a}
+.price-card ul li:before{content:'✓ ';color:#00d4aa;font-weight:700}
+
+/* FAQ */
+.faq{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid #1a1a1a;padding:20px 0}
+.faq-item h3{font-size:16px;color:#ddd;cursor:pointer;padding:8px 0}
+.faq-item p{color:#666;font-size:14px;padding:8px 0}
+
+/* FORM SECTION */
+.form-section{background:#0f0f0f;border-top:1px solid #1a1a1a}
+.form-wrap{max-width:600px;margin:0 auto}
+.form-wrap input,.form-wrap select,.form-wrap textarea{width:100%;padding:14px 16px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#fff;font-size:15px;margin-bottom:16px}
+.form-wrap input:focus,.form-wrap select:focus{outline:none;border-color:#00d4aa}
+.form-wrap .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-wrap .btn{width:100%;padding:16px;background:linear-gradient(135deg,#00d4aa,#00b894);color:#0a0a0a;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer}
+
+/* FOOTER */
+.footer{padding:40px 0;border-top:1px solid #1a1a1a;text-align:center;color:#444;font-size:13px}
+
+@media(max-width:768px){
+  .hero h1{font-size:36px}
+  .steps{grid-template-columns:1fr}
+  .pricing{grid-template-columns:1fr}
+  .stats{gap:30px}
+  .form-wrap .row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="container">
+<div class="nav">
+  <div class="logo">CREDIT FORGE</div>
+  <a href="tel:+18667524618" class="phone">📞 (866) 752-4618</a>
+</div>
+</div>
+
+<!-- HERO -->
+<div class="container">
+<div class="hero">
+  <div class="badge">🏆 Trusted by 10,000+ Clients</div>
+  <h1>Take Control of Your <span>Credit Score</span></h1>
+  <p class="sub">Professional credit repair by RJ Business Solutions. We dispute inaccurate items, negotiate with creditors, and help you achieve the credit score you deserve.</p>
+  <div class="cta-row">
+    <a href="#assessment" class="btn-primary">Get Free Assessment →</a>
+    <a href="#pricing" class="btn-secondary">View Pricing</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="num">10K+</div><div class="label">Clients Served</div></div>
+    <div class="stat"><div class="num">2M+</div><div class="label">Items Disputed</div></div>
+    <div class="stat"><div class="num">85+</div><div class="label">Avg. Score Increase</div></div>
+    <div class="stat"><div class="num">4.9★</div><div class="label">Client Rating</div></div>
+  </div>
+</div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="container">
+<div class="section">
+  <h2>How It Works</h2>
+  <p class="subtitle">Our proven 4-step process has helped thousands of Americans improve their credit scores</p>
+  <div class="steps">
+    <div class="step">
+      <div class="icon">📋</div>
+      <h3>1. Free Assessment</h3>
+      <p>We pull your credit reports from all 3 bureaus and identify every inaccurate, incomplete, or unverifiable item.</p>
+    </div>
+    <div class="step">
+      <div class="icon">⚔️</div>
+      <h3>2. Strategic Disputes</h3>
+      <p>Our experts craft personalized dispute letters and file them with credit bureaus and data furnishers.</p>
+    </div>
+    <div class="step">
+      <div class="icon">📈</div>
+      <h3>3. Score Improvement</h3>
+      <p>We monitor responses, escalate when needed, and keep you updated on every step of the process.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRICING -->
+<div class="container">
+<div class="section" id="pricing">
+  <h2>Simple, Transparent Pricing</h2>
+  <p class="subtitle">No hidden fees. No upfront costs. Cancel anytime.</p>
+  <div class="pricing">
+    <div class="price-card">
+      <h3>Basic Package</h3>
+      <div class="price">$497<span>/mo</span></div>
+      <ul>
+        <li>Credit report analysis</li>
+        <li>Dispute up to 5 items/month</li>
+        <li>Monthly progress reports</li>
+        <li>Email support</li>
+        <li>Credit monitoring</li>
+      </ul>
+      <a href="#assessment" class="btn-secondary" style="width:100%;text-align:center">Get Started</a>
+    </div>
+    <div class="price-card popular">
+      <div class="badge">MOST POPULAR</div>
+      <h3>Premium Package</h3>
+      <div class="price">$997<span>/mo</span></div>
+      <ul>
+        <li>Everything in Basic</li>
+        <li>Unlimited disputes</li>
+        <li>Debt validation letters</li>
+        <li>Furnisher disputes</li>
+        <li>Dedicated specialist</li>
+        <li>Priority support</li>
+        <li>Identity theft protection</li>
+      </ul>
+      <a href="#assessment" class="btn-primary" style="width:100%;text-align:center">Get Started</a>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="container">
+<div class="section">
+  <h2>Frequently Asked Questions</h2>
+  <div class="faq">
+    <div class="faq-item"><h3>How long does credit repair take?</h3><p>Most clients see results within 30-60 days. Full credit repair typically takes 3-6 months depending on the complexity of your situation.</p></div>
+    <div class="faq-item"><h3>Is credit repair legal?</h3><p>Absolutely. The Fair Credit Reporting Act (FCRA) gives you the right to dispute inaccurate information on your credit report. We exercise your legal rights on your behalf.</p></div>
+    <div class="faq-item"><h3>Do you guarantee results?</h3><p>While we cannot guarantee specific results (no one can legally), our track record shows an average score increase of 85+ points for our clients.</p></div>
+    <div class="faq-item"><h3>What if I need to cancel?</h3><p>You can cancel anytime with no cancellation fees. We believe in earning your business every month.</p></div>
+  </div>
+</div>
+</div>
+
+<!-- FORM -->
+<div class="form-section" id="assessment">
+<div class="container">
+<div class="section">
+  <h2>Get Your Free Credit Assessment</h2>
+  <p class="subtitle">Fill out the form below and our team will contact you within 24 hours.</p>
+  <div class="form-wrap">
+    <form id="leadForm">
+      <div class="row">
+        <input type="text" name="firstName" placeholder="First Name *" required>
+        <input type="text" name="lastName" placeholder="Last Name *" required>
+      </div>
+      <div class="row">
+        <input type="email" name="email" placeholder="Email Address *" required>
+        <input type="tel" name="phone" placeholder="Phone Number *" required>
+      </div>
+      <select name="state" required>
+        <option value="">Select State *</option>
+        <option value="CA">California</option><option value="TX">Texas</option>
+        <option value="FL">Florida</option><option value="NY">New York</option>
+        <option value="IL">Illinois</option><option value="PA">Pennsylvania</option>
+        <option value="OH">Ohio</option><option value="GA">Georgia</option>
+        <option value="NC">North Carolina</option><option value="MI">Michigan</option>
+        <option value="Other">Other</option>
+      </select>
+      <select name="servicePackage" required>
+        <option value="">Select Package *</option>
+        <option value="Premium — $997/mo">Premium Package — $997/mo</option>
+        <option value="Basic — $497/mo">Basic Package — $497/mo</option>
+      </select>
+      <textarea name="creditIssues" placeholder="Describe your credit issues (optional)..."></textarea>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+        <input type="checkbox" name="consent" required style="width:20px;height:20px;margin-top:2px;accent-color:#00d4aa">
+        <label style="color:#888;font-size:13px">I agree to receive communications from Credit Forge. This is not a loan. Results not guaranteed.</label>
+      </div>
+      <button type="submit" class="btn">Get My Free Assessment →</button>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="container">
+<div class="footer">
+  <p><strong>CREDIT FORGE</strong> by RJ Business Solutions</p>
+  <p>1342 NM 333, Tijeras, NM 87059 | support@rjbusinesssolutions.org | (866) 752-4618</p>
+  <p style="margin-top:10px">© 2026 RJ Business Solutions. All rights reserved.</p>
+</div>
+</div>
+
+<script>
+document.getElementById('leadForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const btn = this.querySelector('.btn');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ Submitted! We\'ll contact you within 24 hours.';
+    btn.style.background = '#00d4aa';
+  }, 1500);
+});
+</script>
+</body>
+</html>

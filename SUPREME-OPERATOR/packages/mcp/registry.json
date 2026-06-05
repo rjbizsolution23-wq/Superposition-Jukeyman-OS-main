@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "filesystem": "@supreme-operator/mcp-filesystem",
+    "google-cloud": "@supreme-operator/mcp-google-cloud",
+    "vertex-ai": "@supreme-operator/mcp-vertex-ai",
+    "workspace": "@supreme-operator/mcp-workspace",
+    "1panel": "@supreme-operator/mcp-1panel",
+    "twilio": "@supreme-operator/mcp-twilio",
+    "ghl": "@supreme-operator/mcp-ghl",
+    "ollama": "@supreme-operator/mcp-ollama"
+  }
+}

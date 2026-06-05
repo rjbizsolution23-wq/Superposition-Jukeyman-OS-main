@@ -1,0 +1,39 @@
+{
+  "name": "supreme-operator",
+  "version": "1.0.0",
+  "description": "Autonomous Windows Agent Operating System — Built by RJ Business Solutions",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "mcp:start": "pnpm run --filter mcp-router start",
+    "agent:start": "pnpm run --filter orchestrator start",
+    "ui:start": "pnpm run --filter mission-control dev",
+    "install:all": "pnpm install",
+    "clean": "turbo clean && rm -rf node_modules",
+    "deploy": "turbo deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.0.0"
+  }
+}
