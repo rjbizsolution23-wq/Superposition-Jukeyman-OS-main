@@ -2,7 +2,7 @@
 import express from "express";
 import { z } from "zod";
 import dotenv from "dotenv";
-// import { AutoresearchAgent } from "../../../packages/core/dist/autoresearch.js"; // TODO: Enable after core package build
+import { AutoresearchAgent } from "../../../packages/core/dist/autoresearch.js";
 
 // Load environment variables
 dotenv.config({ path: "../../.env.local" });
@@ -47,7 +47,12 @@ const mcpServers = {
   replicate: path.join(__dirname, "../../packages/mcp/replicate/dist/index.js"),
   twilio: path.join(__dirname, "../../packages/mcp/twilio/dist/index.js"),
   ghl: path.join(__dirname, "../../packages/mcp/ghl/dist/index.js"),
-  // Add other MCP servers as they are created
+  "1panel": path.join(__dirname, "../../packages/mcp/1panel/dist/index.js"),
+  filesystem: path.join(__dirname, "../../packages/mcp/filesystem/dist/index.js"),
+  "google-cloud": path.join(__dirname, "../../packages/mcp/google-cloud/dist/index.js"),
+  workspace: path.join(__dirname, "../../packages/mcp/workspace/dist/index.js"),
+  ollama: path.join(__dirname, "../../packages/mcp/ollama/dist/index.js"),
+  "vertex-ai": path.join(__dirname, "../../packages/mcp/vertex-ai/dist/index.js"),
 };
 
 // Tool Router
@@ -93,6 +98,33 @@ const routeTool = (toolName: string): string | null => {
     update_dispute_status: "ghl",
     get_pipeline_metrics: "ghl",
     get_contact_analytics: "ghl",
+
+    // 1Panel tools
+    deploy_app: "1panel",
+    get_server_info: "1panel",
+
+    // Filesystem tools
+    read_file: "filesystem",
+    write_file: "filesystem",
+    list_directory: "filesystem",
+    search_files: "filesystem",
+
+    // Google Cloud tools
+    create_vm: "google-cloud",
+    deploy_model: "google-cloud",
+    query_bigquery: "google-cloud",
+
+    // Google Workspace tools
+    gmail_search: "workspace",
+    drive_list: "workspace",
+    calendar_create: "workspace",
+
+    // Ollama tools
+    generate_text: "ollama",
+
+    // Vertex AI / Gemini tools
+    gemini_query: "vertex-ai",
+    vertex_deploy: "vertex-ai",
   };
 
   return toolMappings[toolName as keyof typeof toolMappings] || null;
@@ -163,8 +195,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Autoresearch Endpoint (for cron job) - TODO: Enable after core package
-/*
+// Autoresearch Endpoint (for cron job)
 app.post("/autoresearch", async (req, res) => {
   try {
     const agent = new AutoresearchAgent();
@@ -178,7 +209,6 @@ app.post("/autoresearch", async (req, res) => {
     });
   }
 });
-*/
 
 // Tool Execution Endpoint
 app.post("/execute", async (req, res) => {
