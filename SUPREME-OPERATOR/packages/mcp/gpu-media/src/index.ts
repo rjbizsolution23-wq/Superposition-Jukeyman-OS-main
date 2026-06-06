@@ -12,12 +12,19 @@ import axios from "axios";
 import fs from "fs";
 import path from "path";
 import Replicate from "replicate";
-
-const GPU_MEDIA_SERVER_URL = process.env.GPU_MEDIA_SERVER_URL || "http://localhost:8000";
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
+import dotenv from "dotenv";
 
 const BASE_DIR = path.resolve("c:/Users/DELL/Downloads/Superposition-Jukeyman-OS-main/SUPREME-OPERATOR");
 const DEFAULT_MEDIA_DIR = path.join(BASE_DIR, "media");
+
+// Load environment from .env.local in project root
+dotenv.config({ path: path.join(BASE_DIR, ".env.local") });
+
+const GPU_MEDIA_SERVER_URL = process.env.GPU_MEDIA_SERVER_URL || "http://localhost:8000";
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
 if (!fs.existsSync(DEFAULT_MEDIA_DIR)) {
   fs.mkdirSync(DEFAULT_MEDIA_DIR, { recursive: true });
@@ -32,7 +39,7 @@ if (REPLICATE_API_TOKEN) {
 }
 
 const server = new Server(
-  { name: "supreme-operator-gpu-media", version: "1.0.0" },
+  { name: "supreme-operator-gpu-media", version: "1.1.0" },
   { capabilities: { tools: {} } }
 );
 
@@ -65,6 +72,35 @@ async function checkGpuServerOnline(): Promise<boolean> {
   }
 }
 
+// Helper to send Twilio SMS
+async function sendSmsNotification(to: string, body: string): Promise<void> {
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+    console.error("SMS notification skipped: Twilio credentials not configured in .env.local");
+    return;
+  }
+  try {
+    const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+    const params = new URLSearchParams({
+      From: TWILIO_PHONE_NUMBER,
+      To: to,
+      Body: body
+    });
+    await axios.post(
+      `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+      params.toString(),
+      {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+    console.error(`SMS notification sent successfully to ${to}`);
+  } catch (error: any) {
+    console.error("Failed to send Twilio SMS notification:", error.response?.data || error.message);
+  }
+}
+
 // Argument Validation Schemas
 const GenerateImageSchema = z.object({
   prompt: z.string(),
@@ -75,7 +111,8 @@ const GenerateImageSchema = z.object({
   steps: z.number().optional(),
   guidanceScale: z.number().optional(),
   seed: z.number().optional(),
-  outputPath: z.string().optional()
+  outputPath: z.string().optional(),
+  notifyPhoneNumber: z.string().optional()
 });
 
 const GenerateVideoSchema = z.object({
@@ -87,6 +124,15 @@ const GenerateVideoSchema = z.object({
   motionBucketId: z.number().default(127),
   noiseAugStrength: z.number().default(0.02),
   seed: z.number().optional(),
+  outputPath: z.string().optional(),
+  notifyPhoneNumber: z.string().optional()
+});
+
+const UpscaleImageSchema = z.object({
+  imagePath: z.string(),
+  prompt: z.string().optional(),
+  scale: z.number().default(2),
+  steps: z.number().default(20),
   outputPath: z.string().optional()
 });
 
@@ -95,7 +141,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "generate_image",
-        description: "Generate an image using GPU-accelerated local server or Replicate API fallback",
+        description: "Generate an image using GPU-accelerated local server or Replicate API fallback (Fully Uncensored)",
         inputSchema: {
           type: "object",
           properties: {
@@ -107,14 +153,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             steps: { type: "number", description: "Number of steps (Flux default: 4, SDXL default: 25)" },
             guidanceScale: { type: "number", description: "Classifier-free guidance scale (Flux Schnell: 0.0, SDXL: 7.5)" },
             seed: { type: "number", description: "Random seed for reproducibility" },
-            outputPath: { type: "string", description: "Optional custom file path to save the generated image" }
+            outputPath: { type: "string", description: "Optional custom file path to save the generated image" },
+            notifyPhoneNumber: { type: "string", description: "Optional phone number to send an SMS to when completed" }
           },
           required: ["prompt"]
         }
       },
       {
         name: "generate_video",
-        description: "Generate a video from text prompt (CogVideo) or input image (Stable Video Diffusion)",
+        description: "Generate a video from text prompt (CogVideo) or input image (Stable Video Diffusion) (Fully Uncensored)",
         inputSchema: {
           type: "object",
           properties: {
@@ -126,8 +173,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             motionBucketId: { type: "number", description: "Motion bucket ID for SVD (1-255, default 127)" },
             noiseAugStrength: { type: "number", description: "Noise augmentation strength for SVD (default 0.02)" },
             seed: { type: "number", description: "Random seed for reproducibility" },
-            outputPath: { type: "string", description: "Optional custom file path to save the generated video" }
+            outputPath: { type: "string", description: "Optional custom file path to save the generated video" },
+            notifyPhoneNumber: { type: "string", description: "Optional phone number to send an SMS to when completed" }
           }
+        }
+      },
+      {
+        name: "upscale_image",
+        description: "Upscale/enhance an existing image using local GPU Latent Upscaler or high-quality Lanczos fallback",
+        inputSchema: {
+          type: "object",
+          properties: {
+            imagePath: { type: "string", description: "Local file path to the image that needs upscaling" },
+            prompt: { type: "string", description: "Optional text description to guide the details of the upscaler" },
+            scale: { type: "number", description: "Factor to scale the image by (default 2)" },
+            steps: { type: "number", description: "Number of inference steps for details (default 20)" },
+            outputPath: { type: "string", description: "Optional custom path to save the upscaled image" }
+          },
+          required: ["imagePath"]
         }
       },
       {
@@ -168,8 +231,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const filename = `image_${uuidName()}.png`;
         const destPath = validated.outputPath || path.join(DEFAULT_MEDIA_DIR, filename);
 
+        let method = "";
         if (online) {
-          // Send request to GPU Server
+          method = "GPU Media Server";
           const reqBody = {
             prompt: validated.prompt,
             negative_prompt: validated.negativePrompt || "",
@@ -184,15 +248,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           const response = await axios.post(`${GPU_MEDIA_SERVER_URL}/generate/image`, reqBody, { timeout: 300000 });
           const fileUrl = `${GPU_MEDIA_SERVER_URL}${response.data.url}`;
           await downloadFile(fileUrl, destPath);
-
-          return {
-            content: [{
-              type: "text",
-              text: `Successfully generated image via GPU Media Server!\nSaved to: ${destPath}\nEngine: ${validated.engine}\nSteps: ${reqBody.steps}`
-            }]
-          };
         } else {
-          // Fall back to Replicate
+          method = "Replicate Fallback";
           if (!replicate) {
             throw new Error("GPU Media Server is offline and REPLICATE_API_TOKEN is not configured for fallback.");
           }
@@ -222,14 +279,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           if (!url) throw new Error("No output URL returned from Replicate");
 
           await downloadFile(url, destPath);
-
-          return {
-            content: [{
-              type: "text",
-              text: `Successfully generated image via Replicate Fallback!\nSaved to: ${destPath}\nEngine: ${validated.engine}`
-            }]
-          };
         }
+
+        const msg = `Successfully generated image via ${method}!\nSaved to: ${destPath}\nPrompt: ${validated.prompt}`;
+        if (validated.notifyPhoneNumber) {
+          await sendSmsNotification(validated.notifyPhoneNumber, `Your image generation is complete!\nSaved to: ${destPath}`);
+        }
+
+        return {
+          content: [{ type: "text", text: msg }]
+        };
       }
 
       case "generate_video": {
@@ -238,8 +297,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const filename = `video_${uuidName()}.mp4`;
         const destPath = validated.outputPath || path.join(DEFAULT_MEDIA_DIR, filename);
 
+        let method = "";
         if (online) {
-          // Send request to GPU Server
+          method = "GPU Media Server";
           const reqBody = {
             prompt: validated.prompt,
             image_path: validated.imagePath,
@@ -254,15 +314,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           const response = await axios.post(`${GPU_MEDIA_SERVER_URL}/generate/video`, reqBody, { timeout: 600000 });
           const fileUrl = `${GPU_MEDIA_SERVER_URL}${response.data.url}`;
           await downloadFile(fileUrl, destPath);
-
-          return {
-            content: [{
-              type: "text",
-              text: `Successfully generated video via GPU Media Server!\nSaved to: ${destPath}\nEngine: ${validated.engine}\nFPS: ${validated.fps}`
-            }]
-          };
         } else {
-          // Fall back to Replicate
+          method = "Replicate Fallback";
           if (!replicate) {
             throw new Error("GPU Media Server is offline and REPLICATE_API_TOKEN is not configured for fallback.");
           }
@@ -306,14 +359,74 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           if (!url) throw new Error("No output URL returned from Replicate");
 
           await downloadFile(url, destPath);
-
-          return {
-            content: [{
-              type: "text",
-              text: `Successfully generated video via Replicate Fallback!\nSaved to: ${destPath}\nEngine: ${validated.engine}`
-            }]
-          };
         }
+
+        const msg = `Successfully generated video via ${method}!\nSaved to: ${destPath}`;
+        if (validated.notifyPhoneNumber) {
+          await sendSmsNotification(validated.notifyPhoneNumber, `Your video generation is complete!\nSaved to: ${destPath}`);
+        }
+
+        return {
+          content: [{ type: "text", text: msg }]
+        };
+      }
+
+      case "upscale_image": {
+        const validated = UpscaleImageSchema.parse(args);
+        if (!fs.existsSync(validated.imagePath)) {
+          throw new Error(`Input image file not found at path: ${validated.imagePath}`);
+        }
+        
+        const online = await checkGpuServerOnline();
+        const filename = `upscaled_${uuidName()}.png`;
+        const destPath = validated.outputPath || path.join(DEFAULT_MEDIA_DIR, filename);
+
+        if (online) {
+          const reqBody = {
+            image_path: validated.imagePath,
+            prompt: validated.prompt || "",
+            scale: validated.scale,
+            steps: validated.steps
+          };
+
+          const response = await axios.post(`${GPU_MEDIA_SERVER_URL}/upscale`, reqBody, { timeout: 300000 });
+          const fileUrl = `${GPU_MEDIA_SERVER_URL}${response.data.url}`;
+          await downloadFile(fileUrl, destPath);
+        } else {
+          // If offline, we can fall back to using replicate for upscaling or perform local high quality upscaling via Python
+          // We will throw a helpful message or use Replicate upscaler if available.
+          // Since we want this to work, we'll fall back to replicate's standard upscaler if replicate is available
+          if (!replicate) {
+            throw new Error("GPU Media Server is offline and REPLICATE_API_TOKEN is not configured for fallback.");
+          }
+
+          const fileData = fs.readFileSync(validated.imagePath);
+          const base64Image = `data:image/png;base64,${fileData.toString("base64")}`;
+
+          // Using standard RealESRGAN on Replicate
+          const output: any = await replicate.run(
+            "nightmareai/real-esrgan:f1c50cdf0bdf349fe1e3e70d4990e78f943a1cf9a5840d58eed8e5e1b608dae0" as any,
+            {
+              input: {
+                image: base64Image,
+                scale: validated.scale,
+                face_enhance: true
+              }
+            }
+          );
+
+          const url = Array.isArray(output) ? output[0] : output;
+          if (!url) throw new Error("No output URL returned from Replicate upscaler");
+
+          await downloadFile(url, destPath);
+        }
+
+        return {
+          content: [{
+            type: "text",
+            text: `Successfully upscaled image!\nSaved to: ${destPath}\nScale Factor: ${validated.scale}x`
+          }]
+        };
       }
 
       default:

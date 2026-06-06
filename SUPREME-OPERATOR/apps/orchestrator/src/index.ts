@@ -114,6 +114,9 @@ const routeTool = (toolName: string): string | null => {
     create_vm: "google-cloud",
     deploy_model: "google-cloud",
     query_bigquery: "google-cloud",
+    start_instance: "google-cloud",
+    stop_instance: "google-cloud",
+    get_instance_status: "google-cloud",
 
     // Google Workspace tools
     gmail_search: "workspace",

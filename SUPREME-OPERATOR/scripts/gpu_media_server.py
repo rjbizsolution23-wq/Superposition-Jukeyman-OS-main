@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
+from PIL import Image
 import logging
 
 # Configure logging
@@ -21,8 +22,8 @@ os.makedirs(MEDIA_DIR, exist_ok=True)
 
 app = FastAPI(
     title="RJ Business Solutions GPU Media Server",
-    description="GPU-accelerated image and video generation server utilizing PyTorch and Diffusers",
-    version="1.0.0"
+    description="GPU-accelerated image, video generation and upscaling server utilising PyTorch and Diffusers (Fully Uncensored)",
+    version="1.1.0"
 )
 
 # Enable CORS
@@ -61,6 +62,12 @@ class VideoRequest(BaseModel):
     motion_bucket_id: int = Field(127, description="Motion level for SVD (1-255)")
     noise_aug_strength: float = Field(0.02, description="Noise amount added for SVD")
     seed: Optional[int] = Field(None, description="Random seed")
+
+class UpscaleRequest(BaseModel):
+    image_path: str = Field(..., description="Local path to the image to upscale")
+    prompt: Optional[str] = Field("", description="Optional prompt describing the image for guided upscaling")
+    scale: int = Field(2, description="Upscaling scale factor (default 2)")
+    steps: int = Field(20, description="Inference steps for upscaling (default 20)")
 
 def clean_vram():
     """Run Python garbage collection and empty PyTorch CUDA cache."""
@@ -153,6 +160,11 @@ async def generate_image(request: ImageRequest):
                     variant="fp16",
                     use_safetensors=True
                 )
+                
+            # Disable safety checker to make it fully uncensored
+            if hasattr(active_pipelines["image"], "safety_checker") and active_pipelines["image"].safety_checker is not None:
+                active_pipelines["image"].safety_checker = None
+                logger.info("Safety checker disabled on image pipeline")
                 
             # CPU Offloading / Memory savings optimizations
             active_pipelines["image"].enable_model_cpu_offload()
@@ -247,6 +259,11 @@ async def generate_video(request: VideoRequest):
                     variant="fp16"
                 )
                 
+            # Disable safety checker to make it fully uncensored
+            if hasattr(active_pipelines["video"], "safety_checker") and active_pipelines["video"].safety_checker is not None:
+                active_pipelines["video"].safety_checker = None
+                logger.info("Safety checker disabled on video pipeline")
+                
             active_pipelines["video"].enable_model_cpu_offload()
             active_pipelines["current_type"] = "video"
             active_pipelines["current_model_id"] = model_id
@@ -307,6 +324,78 @@ async def generate_video(request: VideoRequest):
     except Exception as e:
         logger.exception("Failed to generate video")
         raise HTTPException(status_code=500, detail=f"Video generation failed: {str(e)}")
+
+@app.post("/upscale")
+async def upscale_image(request: UpscaleRequest):
+    """Upscale an image using Stable Diffusion Latent Upscaler or PIL Lanczos fallback (Fully Uncensored)."""
+    global active_pipelines
+    
+    if not os.path.exists(request.image_path):
+        raise HTTPException(status_code=400, detail="Input image path does not exist")
+        
+    try:
+        input_img = Image.open(request.image_path)
+        
+        # If GPU is available, try using Stable Diffusion Latent Upscaler
+        if torch.cuda.is_available():
+            from diffusers import StableDiffusionLatentUpscalePipeline
+            
+            # Unload other models to save VRAM
+            unload_pipelines()
+            
+            model_id = "stabilityai/sd-x2-latent-upscaler"
+            logger.info(f"Loading latent upscaler: {model_id}")
+            
+            upscaler = StableDiffusionLatentUpscalePipeline.from_pretrained(
+                model_id,
+                torch_dtype=torch.float16
+            )
+            upscaler.enable_model_cpu_offload()
+            if hasattr(upscaler, "safety_checker") and upscaler.safety_checker is not None:
+                upscaler.safety_checker = None
+                logger.info("Safety checker disabled on upscaling pipeline")
+                
+            logger.info("Upscaling image via SD x2 Latent Upscaler...")
+            # Upscaler expects prompt. If empty, use a generic high quality prompt
+            prompt = request.prompt or "high quality, detailed, 4k"
+            
+            # Resize input image to be divisible by 64 (requirement of the latent upscaler)
+            w, h = input_img.size
+            new_w = (w // 64) * 64
+            new_h = (h // 64) * 64
+            if new_w != w or new_h != h:
+                input_img = input_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+                
+            upscaled_image = upscaler(
+                prompt=prompt,
+                image=input_img,
+                num_inference_steps=request.steps,
+                guidance_scale=6.0
+            ).images[0]
+            
+            # Clean up upscaler to free VRAM
+            del upscaler
+            clean_vram()
+        else:
+            # CPU Fallback - High Quality Lanczos resize
+            logger.info("CUDA not available. Using high-quality PIL Lanczos resize fallback.")
+            w, h = input_img.size
+            upscaled_image = input_img.resize((w * request.scale, h * request.scale), Image.Resampling.LANCZOS)
+            
+        filename = f"upscaled_{uuid.uuid4().hex}.png"
+        filepath = os.path.join(MEDIA_DIR, filename)
+        upscaled_image.save(filepath)
+        
+        logger.info(f"Upscaled image saved to {filepath}")
+        return {
+            "success": True,
+            "filename": filename,
+            "filepath": filepath,
+            "url": f"/media/{filename}"
+        }
+    except Exception as e:
+        logger.exception("Failed to upscale image")
+        raise HTTPException(status_code=500, detail=f"Upscaling failed: {str(e)}")
 
 # Mount static files folder to serve generated media
 app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
