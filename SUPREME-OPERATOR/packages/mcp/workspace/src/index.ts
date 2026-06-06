@@ -119,7 +119,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
         const response = await calendar.events.insert({
           calendarId: 'primary',
-          resource: event,
+          requestBody: event,
         });
         return { content: [{ type: "text", text: `Event created: ${response.data.id}` }] };
       }

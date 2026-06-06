@@ -3,7 +3,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { Compute } from "@google-cloud/compute";
+import { InstancesClient } from "@google-cloud/compute";
 import { Storage } from "@google-cloud/storage";
 import { BigQuery } from "@google-cloud/bigquery";
 
@@ -13,7 +13,7 @@ const server = new Server(
 );
 
 // Initialize Google Cloud clients
-const compute = new Compute();
+const instancesClient = new InstancesClient();
 const storage = new Storage();
 const bigquery = new BigQuery();
 
@@ -79,9 +79,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "create_vm": {
         const validated = CreateVMArgsSchema.parse(args);
-        // Create VM instance
-        const [vm, operation] = await compute.zone(validated.zone).createVM(validated.name, {
-          machineType: validated.machineType,
+        const [operation] = await instancesClient.insert({
+          project: "596791791098",
+          zone: validated.zone,
+          instanceResource: {
+            name: validated.name,
+            machineType: `zones/${validated.zone}/machineTypes/${validated.machineType}`,
+            networkInterfaces: [
+              {
+                network: "global/networks/default",
+              }
+            ],
+            disks: [
+              {
+                boot: true,
+                initializeParams: {
+                  sourceImage: "projects/debian-cloud/global/images/family/debian-11",
+                }
+              }
+            ]
+          }
         });
         await operation.promise();
         return { content: [{ type: "text", text: `VM ${validated.name} created successfully` }] };

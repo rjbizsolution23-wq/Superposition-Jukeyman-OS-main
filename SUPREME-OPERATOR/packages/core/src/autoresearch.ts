@@ -84,4 +84,4 @@ export class AutoresearchAgent {
 }
 
 // Export for use in cron job
-export { AutoresearchAgent };
+// (Already exported at class definition)

@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { VertexAI } from "@google-cloud/aiplatform";
+import { ModelServiceClient } from "@google-cloud/aiplatform";
 
 const server = new Server(
   { name: "supreme-operator-vertex-ai", version: "1.0.0" },
@@ -13,7 +13,7 @@ const server = new Server(
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "AIzaSyCTXGSxVwmRjvuJ0Xno57WpFKNRmrlq-EE");
-const vertexAI = new VertexAI({ project: "596791791098", location: "us-central1" });
+const modelServiceClient = new ModelServiceClient({ apiEndpoint: "us-central1-aiplatform.googleapis.com" });
 
 const GeminiQueryArgsSchema = z.object({
   prompt: z.string(),
@@ -71,15 +71,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "vertex_deploy": {
         const validated = VertexDeployArgsSchema.parse(args);
-        // Deploy model to Vertex AI (simplified)
-        const model = await vertexAI.uploadModel({
-          displayName: validated.modelName,
-          artifactUri: validated.modelPath,
-          containerSpec: {
-            imageUri: "gcr.io/cloud-aiplatform/prediction/tf2-cpu.2-12:latest",
+        const parent = `projects/596791791098/locations/${validated.region}`;
+        const [operation] = await modelServiceClient.uploadModel({
+          parent,
+          model: {
+            displayName: validated.modelName,
+            artifactUri: validated.modelPath,
+            containerSpec: {
+              imageUri: "gcr.io/cloud-aiplatform/prediction/tf2-cpu.2-12:latest",
+            },
           },
         });
-        return { content: [{ type: "text", text: `Model deployed: ${model.name}` }] };
+        const [response] = await operation.promise();
+        return { content: [{ type: "text", text: `Model deployed: ${response.model}` }] };
       }
 
       default:

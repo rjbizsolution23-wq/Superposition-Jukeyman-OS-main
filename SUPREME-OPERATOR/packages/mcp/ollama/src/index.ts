@@ -3,15 +3,15 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { ollama } from "ollama";
+import { Ollama } from "ollama";
 
 const server = new Server(
   { name: "supreme-operator-ollama", version: "1.0.0" },
   { capabilities: { tools: {} } }
 );
 
-// Connect to Ollama server (hosted on GCP)
-const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://ollama-server:11434";
+const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://localhost:11434";
+const ollama = new Ollama({ address: OLLAMA_HOST });
 
 const GenerateArgsSchema = z.object({
   model: z.string(),
@@ -51,19 +51,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "generate_text": {
         const validated = GenerateArgsSchema.parse(args);
-        const response = await ollama.generate({
-          model: validated.model,
-          prompt: validated.prompt,
-          stream: validated.stream,
-          host: OLLAMA_HOST
-        });
-        return { content: [{ type: "text", text: response.response || JSON.stringify(response) }] };
+        let responseText = "";
+        for await (const chunk of ollama.generate(validated.model, validated.prompt)) {
+          responseText += chunk;
+        }
+        return { content: [{ type: "text", text: responseText }] };
       }
 
       case "list_models": {
         ListModelsArgsSchema.parse(args);
-        const response = await ollama.list({ host: OLLAMA_HOST });
-        return { content: [{ type: "text", text: JSON.stringify(response.models) }] };
+        const response = await ollama.tags();
+        return { content: [{ type: "text", text: JSON.stringify(response) }] };
       }
 
       default:
