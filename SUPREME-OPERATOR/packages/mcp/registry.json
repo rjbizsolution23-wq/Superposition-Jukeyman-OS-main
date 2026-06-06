@@ -7,6 +7,7 @@
     "1panel": "@supreme-operator/mcp-1panel",
     "twilio": "@supreme-operator/mcp-twilio",
     "ghl": "@supreme-operator/mcp-ghl",
-    "ollama": "@supreme-operator/mcp-ollama"
+    "ollama": "@supreme-operator/mcp-ollama",
+    "gpu-media": "@supreme-operator/mcp-gpu-media"
   }
 }

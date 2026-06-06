@@ -292,6 +292,28 @@ importers:
         specifier: ^5.8.0
         version: 5.9.3
 
+  packages/mcp/gpu-media:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.0.0
+        version: 1.29.0(zod@3.25.76)
+      axios:
+        specifier: ^1.6.0
+        version: 1.16.1
+      replicate:
+        specifier: ^0.25.0
+        version: 0.25.2
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.19.19
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
   packages/mcp/ollama:
     dependencies:
       '@modelcontextprotocol/sdk':
@@ -3836,6 +3858,10 @@ packages:
   real-require@0.2.0:
     resolution: {integrity: sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg==}
     engines: {node: '>= 12.13.0'}
+
+  replicate@0.25.2:
+    resolution: {integrity: sha512-c5otBJ5E66XLS0X196pBCsyy85b03ZBLeV/lbKfU8cqfkt3Qd6NGEiPwTtxtsQ4AznggMJNn2Qq68t/bV85M2w==}
+    engines: {git: '>=2.11.0', node: '>=18.0.0', npm: '>=7.19.0', yarn: '>=1.7.0'}
 
   replicate@0.29.4:
     resolution: {integrity: sha512-BizXBehB2Rjil3o2R9Vy9fd0k3w7aIoXtc/+vdOmitC2viW3pSMt0GwC4h+OmMpx9zot90C43wrssyMJ3rMScQ==}
@@ -8333,6 +8359,10 @@ snapshots:
     optional: true
 
   real-require@0.2.0: {}
+
+  replicate@0.25.2:
+    optionalDependencies:
+      readable-stream: 4.7.0
 
   replicate@0.29.4:
     optionalDependencies:

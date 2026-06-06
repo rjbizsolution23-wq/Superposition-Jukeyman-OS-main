@@ -53,6 +53,7 @@ const mcpServers = {
   workspace: path.join(__dirname, "../../packages/mcp/workspace/dist/index.js"),
   ollama: path.join(__dirname, "../../packages/mcp/ollama/dist/index.js"),
   "vertex-ai": path.join(__dirname, "../../packages/mcp/vertex-ai/dist/index.js"),
+  "gpu-media": path.join(__dirname, "../../packages/mcp/gpu-media/dist/index.js"),
 };
 
 // Tool Router
@@ -125,6 +126,11 @@ const routeTool = (toolName: string): string | null => {
     // Vertex AI / Gemini tools
     gemini_query: "vertex-ai",
     vertex_deploy: "vertex-ai",
+
+    // GPU Media tools
+    generate_image: "gpu-media",
+    generate_video: "gpu-media",
+    get_gpu_media_status: "gpu-media",
   };
 
   return toolMappings[toolName as keyof typeof toolMappings] || null;
