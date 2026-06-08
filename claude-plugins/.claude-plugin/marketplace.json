@@ -20,6 +20,66 @@
     {
       "name": "memory-toolkit",
       "source": "./memory-toolkit"
+    },
+    {
+      "name": "computer-use-linux",
+      "source": "./computer-use-linux"
+    },
+    {
+      "name": "computer-use-mac",
+      "source": "./computer-use-mac"
+    },
+    {
+      "name": "agent-sdk-dev",
+      "source": "./agent-sdk-dev"
+    },
+    {
+      "name": "claude-opus-4-5-migration",
+      "source": "./claude-opus-4-5-migration"
+    },
+    {
+      "name": "code-review",
+      "source": "./code-review"
+    },
+    {
+      "name": "commit-commands",
+      "source": "./commit-commands"
+    },
+    {
+      "name": "explanatory-output-style",
+      "source": "./explanatory-output-style"
+    },
+    {
+      "name": "feature-dev",
+      "source": "./feature-dev"
+    },
+    {
+      "name": "frontend-design",
+      "source": "./frontend-design"
+    },
+    {
+      "name": "hookify",
+      "source": "./hookify"
+    },
+    {
+      "name": "learning-output-style",
+      "source": "./learning-output-style"
+    },
+    {
+      "name": "plugin-dev",
+      "source": "./plugin-dev"
+    },
+    {
+      "name": "pr-review-toolkit",
+      "source": "./pr-review-toolkit"
+    },
+    {
+      "name": "ralph-wiggum",
+      "source": "./ralph-wiggum"
+    },
+    {
+      "name": "security-guidance",
+      "source": "./security-guidance"
     }
   ]
 }
