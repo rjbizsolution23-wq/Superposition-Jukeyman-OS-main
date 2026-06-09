@@ -54,6 +54,7 @@ const mcpServers = {
   ollama: path.join(__dirname, "../../packages/mcp/ollama/dist/index.js"),
   "vertex-ai": path.join(__dirname, "../../packages/mcp/vertex-ai/dist/index.js"),
   "gpu-media": path.join(__dirname, "../../packages/mcp/gpu-media/dist/index.js"),
+  huggingface: path.join(__dirname, "../../packages/mcp/huggingface/dist/index.js"),
 };
 
 // Tool Router
@@ -134,6 +135,13 @@ const routeTool = (toolName: string): string | null => {
     generate_image: "gpu-media",
     generate_video: "gpu-media",
     get_gpu_media_status: "gpu-media",
+
+    // Hugging Face tools
+    huggingface_search: "huggingface",
+    huggingface_generate_image: "huggingface",
+    huggingface_text_to_speech: "huggingface",
+    huggingface_transcribe: "huggingface",
+    huggingface_dataset_viewer: "huggingface",
   };
 
   return toolMappings[toolName as keyof typeof toolMappings] || null;

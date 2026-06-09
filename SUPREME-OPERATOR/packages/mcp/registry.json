@@ -8,6 +8,7 @@
     "twilio": "@supreme-operator/mcp-twilio",
     "ghl": "@supreme-operator/mcp-ghl",
     "ollama": "@supreme-operator/mcp-ollama",
-    "gpu-media": "@supreme-operator/mcp-gpu-media"
+    "gpu-media": "@supreme-operator/mcp-gpu-media",
+    "huggingface": "@supreme-operator/mcp-huggingface"
   }
 }

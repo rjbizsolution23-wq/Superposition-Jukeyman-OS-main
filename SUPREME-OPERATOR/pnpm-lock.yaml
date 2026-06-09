@@ -78,7 +78,7 @@ importers:
         version: 1.16.1
       crewai:
         specifier: ^1.0.1
-        version: 1.0.1(axios@1.16.1)(canvas@2.11.2(encoding@0.1.13))(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(fast-xml-parser@5.8.0)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))(ws@8.20.1)
+        version: 1.0.1(@huggingface/inference@1.8.0)(axios@1.16.1)(canvas@2.11.2(encoding@0.1.13))(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(fast-xml-parser@5.8.0)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))(ws@8.20.1)
       zod:
         specifier: ^3.22.0
         version: 3.25.76
@@ -303,6 +303,31 @@ importers:
       replicate:
         specifier: ^0.25.0
         version: 0.25.2
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.19.19
+      typescript:
+        specifier: ^5.8.0
+        version: 5.9.3
+
+  packages/mcp/huggingface:
+    dependencies:
+      '@huggingface/inference':
+        specifier: ^1.5.1
+        version: 1.8.0
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.0.0
+        version: 1.29.0(zod@3.25.76)
+      axios:
+        specifier: ^1.6.0
+        version: 1.16.1
+      dotenv:
+        specifier: ^16.0.0
+        version: 16.6.1
       zod:
         specifier: ^3.24.0
         version: 3.25.76
@@ -867,6 +892,10 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@huggingface/inference@1.8.0':
+    resolution: {integrity: sha512-Dkh7PiyMf6TINRocQsdceiR5LcqJiUHgWjaBMRpCUOCbs+GZA122VH9q+wodoSptj6rIQf7wIwtDsof+/gd0WA==}
+    engines: {node: '>=18'}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -4938,6 +4967,8 @@ snapshots:
     dependencies:
       hono: 4.12.18
 
+  '@huggingface/inference@1.8.0': {}
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -6046,14 +6077,14 @@ snapshots:
 
   create-require@1.1.1: {}
 
-  crewai@1.0.1(axios@1.16.1)(canvas@2.11.2(encoding@0.1.13))(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(fast-xml-parser@5.8.0)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))(ws@8.20.1):
+  crewai@1.0.1(@huggingface/inference@1.8.0)(axios@1.16.1)(canvas@2.11.2(encoding@0.1.13))(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(fast-xml-parser@5.8.0)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))(ws@8.20.1):
     dependencies:
       '@dqbd/tiktoken': 1.0.22
       '@types/fs-extra': 11.0.4
       chalk: 5.6.2
       commander: 12.1.0
       console-table-printer: 2.15.0
-      embedchain: 0.0.8(canvas@2.11.2(encoding@0.1.13))(encoding@0.1.13)(ignore@5.3.2)(ws@8.20.1)(zod@3.25.76)
+      embedchain: 0.0.8(@huggingface/inference@1.8.0)(canvas@2.11.2(encoding@0.1.13))(encoding@0.1.13)(ignore@5.3.2)(ws@8.20.1)(zod@3.25.76)
       fs-extra: 11.3.5
       js-yaml: 4.1.1
       langchain: 0.2.20(axios@1.16.1)(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(fast-xml-parser@5.8.0)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76))(ws@8.20.1)
@@ -6294,12 +6325,12 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  embedchain@0.0.8(canvas@2.11.2(encoding@0.1.13))(encoding@0.1.13)(ignore@5.3.2)(ws@8.20.1)(zod@3.25.76):
+  embedchain@0.0.8(@huggingface/inference@1.8.0)(canvas@2.11.2(encoding@0.1.13))(encoding@0.1.13)(ignore@5.3.2)(ws@8.20.1)(zod@3.25.76):
     dependencies:
       axios: 1.16.1
       chromadb: 1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76))
       jsdom: 22.1.0(canvas@2.11.2(encoding@0.1.13))
-      langchain: 0.0.136(axios@1.16.1)(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))
+      langchain: 0.0.136(@huggingface/inference@1.8.0)(axios@1.16.1)(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13)))
       openai: 4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)
       pdfjs-dist: 3.11.174(encoding@0.1.13)
       uuid: 9.0.1
@@ -7627,7 +7658,7 @@ snapshots:
 
   kuler@2.0.0: {}
 
-  langchain@0.0.136(axios@1.16.1)(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13))):
+  langchain@0.0.136(@huggingface/inference@1.8.0)(axios@1.16.1)(chromadb@1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76)))(encoding@0.1.13)(ignore@5.3.2)(jsdom@22.1.0(canvas@2.11.2(encoding@0.1.13))):
     dependencies:
       '@anthropic-ai/sdk': 0.5.10(encoding@0.1.13)
       ansi-styles: 5.2.0
@@ -7651,6 +7682,7 @@ snapshots:
       zod: 3.25.76
       zod-to-json-schema: 3.25.2(zod@3.25.76)
     optionalDependencies:
+      '@huggingface/inference': 1.8.0
       axios: 1.16.1
       chromadb: 1.10.5(encoding@0.1.13)(openai@4.104.0(encoding@0.1.13)(ws@8.20.1)(zod@3.25.76))
       ignore: 5.3.2
